@@ -1,0 +1,14 @@
+#ifndef _PIUIO_H
+#define _PIUIO_H
+
+#define PIUIO_MSG_SIZE 8
+
+#define PIUIO_CMD_MSG 0xAE
+
+#define PIUIO_VID 0x0547
+#define PIUIO_PID 0x1002
+
+#define PIUIO_REQTYPE_WRITELIGHT 0x40
+#define PIUIO_REQTYPE_GETINPUT 0xC0
+
+#endif

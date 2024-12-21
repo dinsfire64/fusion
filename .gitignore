@@ -50,3 +50,20 @@ modules.order
 Module.symvers
 Mkfile.old
 dkms.conf
+
+# C build products
+build/
+.stamp
+*.bin
+*.lib
+*.ihex
+*.uf2
+*.UF2
+*.dfu
+
+# Python build products
+__pycache__/
+*.pyc
+*.egg-info
+dist/
+

@@ -12,9 +12,11 @@
 #include "io.h"
 #include "piuio.h"
 
+static bool autopoll = true;
+
 // state of the IO.
-piuio_input_state_t new_state;
-piuio_output_state_t lamp_state;
+piuio_input_state_t new_state_to_game;
+piuio_output_state_t lamp_state_from_game;
 
 // We perform lengthy operations in the main loop to avoid hogging the interrupt.
 // This flag is used for synchronization between the main loop and the ISR;
@@ -128,8 +130,16 @@ bool handle_piuio_msg(void)
             while (EP0CS & _BUSY)
                 ;
 
-            memcpy(&lamp_state.buff[0], &EP0BUF[0], 4);
-            push_lights(&lamp_state);
+            memcpy(&lamp_state_from_game.buff[0], &EP0BUF[0], 4);
+
+            if (autopoll)
+            {
+                mux_lamp_state(&lamp_state_from_game);
+            }
+            else
+            {
+                push_lights(&lamp_state_from_game);
+            }
 
             return true;
         }
@@ -137,22 +147,32 @@ bool handle_piuio_msg(void)
         {
             // pushing button state to game
 
-            pending_setup = false;
-
             while (EP0CS & _BUSY)
                 ;
 
-            new_state = get_input_state();
+            if (autopoll)
+            {
+                memcpy(&new_state_to_game.buff[0], &current_button_state.buff[0], 4);
+            }
+            else
+            {
+                // rate limit the polling, otherwise the game will get glitchy...
+                delay_us(SENSOR_MUX_DELAY);
+                new_state_to_game = get_input_state();
+            }
 
             // buttons are active low, so set high.
-            memset(&EP0BUF[0], 0xFF, req->wLength);
-            memcpy(&EP0BUF[0], &new_state.buff[0], 4);
+            memset(&EP0BUF[0], 0xFF, (uint8_t)req->wLength);
+            memcpy(&EP0BUF[0], &new_state_to_game.buff[0], 4);
 
             // these are always zero for some reason?
             EP0BUF[6] = 0;
             EP0BUF[7] = 0;
 
-            SETUP_EP0_BUF(req->wLength);
+            SETUP_EP0_BUF((uint8_t)req->wLength);
+
+            pending_setup = false;
+
             return true;
         }
     }
@@ -169,6 +189,7 @@ void handle_usb_setup(__xdata struct usb_req_setup *req)
     if (pending_setup)
     {
         // we are busy, please come back later.
+        // kpump didn't like this despite it being legal to do...
         STALL_EP0();
     }
     else
@@ -229,9 +250,10 @@ int main(void)
     // turn on the LED to indicate firmware has loaded.
     // if you have something running that will autoconnect to the piuio (like the linux kernel module)
     // this will not stay lit for long, since a full lighting state will be written.
-    lamp_state.raw = 0;
-    lamp_state.lamp_neons.lamp_led = true;
-    push_lights(&lamp_state);
+    lamp_state_from_game.raw = 0;
+    lamp_state_from_game.lamp_neons.lamp_led = true;
+    mux_lamp_state(&lamp_state_from_game);
+    push_lights(&lamp_state_from_game);
 
     while (1)
     {
@@ -239,5 +261,7 @@ int main(void)
         {
             handle_piuio_msg();
         }
+
+        io_task(autopoll);
     }
 }

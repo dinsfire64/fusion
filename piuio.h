@@ -11,6 +11,8 @@
 
 #define PIUIO_MSG_SIZE 8
 
+#define PIUIO_NUM_SENSORS 4
+
 /*
  * ------------------------------------------------
  * -------------- BITS TO CPU  ----------------

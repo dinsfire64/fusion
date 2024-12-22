@@ -47,6 +47,7 @@ int main(int argc, char *argv[])
 
             uint8_t bit_loc = 0;
             uint8_t byte_loc = 0;
+            uint8_t sensor_num = 0;
             bool toggle = false;
 
             printf("starting...\n");
@@ -67,10 +68,20 @@ int main(int argc, char *argv[])
                     }
                 }
 
-                printf("send: %d:%d\n", byte_loc, bit_loc);
+                // printf("send: %d:%d\n", byte_loc, bit_loc);
 
                 memset(iDataPIUIO, 0, PIUIO_MSG_SIZE);
                 iDataPIUIO[byte_loc] = (1 << bit_loc);
+
+                // iDataPIUIO[0] = iDataPIUIO[0] & 0x03;
+                // iDataPIUIO[0] |= sensor_num & 0x03;
+                // iDataPIUIO[2] = iDataPIUIO[2] & 0x03;
+                // iDataPIUIO[2] |= sensor_num & 0x03;
+                // sensor_num++;
+
+                printf("send: %02x:%02x:%02x:%02x:%02x:%02x:%02x:%02x\n", iDataPIUIO[0],
+                       iDataPIUIO[1], iDataPIUIO[2], iDataPIUIO[3],
+                       iDataPIUIO[4], iDataPIUIO[5], iDataPIUIO[6], iDataPIUIO[7]);
 
                 // USB_SEND
                 usb_control_msg(piuio_udev, PIUIO_REQTYPE_WRITELIGHT, PIUIO_CMD_MSG, 0, 0, iDataPIUIO,

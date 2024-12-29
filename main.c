@@ -25,6 +25,16 @@ piuio_output_state_t lamp_state_from_game;
 // the entire SETUP request is parsed.
 static volatile __bit pending_setup;
 
+// helper function not in the library yet, PR #18 against libfx2.
+// https://github.com/whitequark/libfx2/pull/18
+#define SETUP_EP0_OUT_BUF()   \
+    do                        \
+    {                         \
+        SUDPTRCTL = _SDPAUTO; \
+        EP0BCH = 0;           \
+        EP0BCL = 0;           \
+    } while (0)
+
 usb_desc_device_c usb_device = {
     .bLength = sizeof(struct usb_desc_device),
     .bDescriptorType = USB_DESC_DEVICE,
@@ -126,7 +136,7 @@ bool handle_piuio_msg(void)
 
             pending_setup = false;
 
-            SETUP_EP0_BUF(0);
+            SETUP_EP0_OUT_BUF();
             while (EP0CS & _BUSY)
                 ;
 
@@ -139,7 +149,13 @@ bool handle_piuio_msg(void)
             else
             {
                 push_lights(&lamp_state_from_game);
+
+                // let the sensor mux settle.
+                delay_us(SENSOR_MUX_DELAY);
             }
+
+            // safe to overwrite EP0BUF since I have pulled the data out and processed it.
+            ACK_EP0();
 
             return true;
         }
@@ -156,8 +172,6 @@ bool handle_piuio_msg(void)
             }
             else
             {
-                // rate limit the polling, otherwise the game will get glitchy...
-                delay_us(SENSOR_MUX_DELAY);
                 new_state_to_game = get_input_state();
             }
 

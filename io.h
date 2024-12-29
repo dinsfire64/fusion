@@ -8,7 +8,7 @@
 #define TIMER0_COUNT (65536 - (48000000 / (24 * 500)))
 #define TIMER1_COUNT (65536 - (48000000 / (24 * 1000)))
 
-#define SENSOR_MUX_DELAY 64
+#define SENSOR_MUX_DELAY 100
 
 // the original firmware delays for ~1us
 #define DELAY_OUTPUT_4C 1

@@ -15,6 +15,7 @@ piuio_input_state_t volatile all_states[PIUIO_NUM_SENSORS];
 uint8_t current_sensor_num = 0;
 
 static volatile bool preform_poll = false;
+bool autopoll_enabled = false;
 
 void set_sensor_mux(void)
 {
@@ -28,13 +29,13 @@ void set_reactive_lights(void)
     // TODO ITG swapped p1/p2 lights, so offer a swap function/setting.
     current_lamp_state.p1_lamps.lamp_ul = !current_button_state.player1.btn_UL_U | current_game_lamp_state.p1_lamps.lamp_ul;
     current_lamp_state.p1_lamps.lamp_ur = !current_button_state.player1.btn_UR_D | current_game_lamp_state.p1_lamps.lamp_ur;
-    current_lamp_state.p1_lamps.lamp_c = !current_button_state.player1.btn_C_L | current_game_lamp_state.p1_lamps.lamp_c;
+    current_lamp_state.p1_lamps.lamp_cn = !current_button_state.player1.btn_CN_L | current_game_lamp_state.p1_lamps.lamp_cn;
     current_lamp_state.p1_lamps.lamp_ll = !current_button_state.player1.btn_LL_R | current_game_lamp_state.p1_lamps.lamp_ll;
     current_lamp_state.p1_lamps.lamp_lr = !current_button_state.player1.btn_LR_START | current_game_lamp_state.p1_lamps.lamp_lr;
 
     current_lamp_state.p2_lamps.lamp_ul = !current_button_state.player2.btn_UL_U | current_game_lamp_state.p2_lamps.lamp_ul;
     current_lamp_state.p2_lamps.lamp_ur = !current_button_state.player2.btn_UR_D | current_game_lamp_state.p2_lamps.lamp_ur;
-    current_lamp_state.p2_lamps.lamp_c = !current_button_state.player2.btn_C_L | current_game_lamp_state.p2_lamps.lamp_c;
+    current_lamp_state.p2_lamps.lamp_cn = !current_button_state.player2.btn_CN_L | current_game_lamp_state.p2_lamps.lamp_cn;
     current_lamp_state.p2_lamps.lamp_ll = !current_button_state.player2.btn_LL_R | current_game_lamp_state.p2_lamps.lamp_ll;
     current_lamp_state.p2_lamps.lamp_lr = !current_button_state.player2.btn_LR_START | current_game_lamp_state.p2_lamps.lamp_lr;
 }
@@ -107,7 +108,7 @@ void isr_TF1(void) __interrupt(_INT_TF0)
     TR1 = 1;
 }
 
-void init_io(void)
+void init_io(bool en_autopoll)
 {
     // configure the latching / clock pins
     // all outputs.
@@ -137,14 +138,19 @@ void init_io(void)
     ET0 = 1; // enables Timer 0 interrupt
     TR0 = 1; // starts Timer 0
 
-    TR1 = 0;                       // stops Timer 1
-    TMOD &= ~0xF0;                 // clear Timer 1 mode bits
-    TMOD |= 0x10;                  // setup Timer 11 as a 16-bit timer
-    TL1 = (TIMER1_COUNT & 0x00FF); // loads the timer counts
-    TH1 = (TIMER1_COUNT >> 8);
-    PT1 = 0; // sets the Timer 1 interrupt to low priority
-    ET1 = 1; // enables Timer 1 interrupt
-    TR1 = 1; // starts Timer 1
+    if (en_autopoll)
+    {
+        TR1 = 0;                       // stops Timer 1
+        TMOD &= ~0xF0;                 // clear Timer 1 mode bits
+        TMOD |= 0x10;                  // setup Timer 11 as a 16-bit timer
+        TL1 = (TIMER1_COUNT & 0x00FF); // loads the timer counts
+        TH1 = (TIMER1_COUNT >> 8);
+        PT1 = 0; // sets the Timer 1 interrupt to low priority
+        ET1 = 1; // enables Timer 1 interrupt
+        TR1 = 1; // starts Timer 1
+    }
+    
+    autopoll_enabled = en_autopoll;
 
     // init states
     preform_poll = false;
@@ -259,9 +265,9 @@ piuio_input_state_t get_input_state(void)
     return new_state;
 }
 
-void io_task(bool autopoll)
+void io_task(void)
 {
-    if (autopoll)
+    if (autopoll_enabled)
     {
         if (preform_poll)
         {

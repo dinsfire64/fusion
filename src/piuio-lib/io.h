@@ -16,7 +16,7 @@
 // the original firmware delayed for ~7us
 #define DELAY_INPUT_4C 18
 
-void init_io(void);
+void init_io(bool en_autopoll);
 
 void push_lights(piuio_output_state_t *light_state);
 piuio_input_state_t get_input_state(void);
@@ -24,7 +24,7 @@ piuio_input_state_t get_input_state(void);
 void create_exchange(void);
 void mux_lamp_state(piuio_output_state_t *light_state_from_game);
 
-void io_task(bool autopoll);
+void io_task(void);
 void set_reactive_lights(void);
 
 extern piuio_input_state_t volatile current_button_state;

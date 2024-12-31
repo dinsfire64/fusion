@@ -1,24 +1,22 @@
-TARGET    = piuio
-LIBRARIES = fx2 fx2isrs fx2usb
-MODEL     = small
+PIUIO_DIR = src/piuio
 
-SOURCES = io main
+#this order is the dependency order.
+SUBDIRS = lib/libfx2/firmware/library src/piuio-lib $(PIUIO_DIR)
 
-VID       = 0547
-PID       = 1002
+all:
+	@set -e; for dir in $(SUBDIRS); do $(MAKE) -C $${dir} all; done
 
-LIBFX2  = lib/libfx2/firmware/library
-include $(LIBFX2)/fx2rules.mk
+clean:
+	@set -e; for dir in $(SUBDIRS); do $(MAKE) -C $${dir} clean; done
 
-FX2FLASH   = python3 -m fx2.fx2tool program -V $(VID) -P $(PID) -f 
+#required for communicating with the fx2 bootloader.
+install-flasher:
+	cd lib/libfx2/software; python3 setup.py develop --user
 
-make-libs:
-	cd $(LIBFX2); make all
-	
-force-to-bootloader:
-	python -m fx2.fx2tool -d $(VID):$(PID) -B reenumerate; \
-	python -m fx2.fx2tool -B reenumerate; \
-	sleep 2;
-	
-flash: all force-to-bootloader 
-	$(FX2FLASH) $(TARGET).ihex; python -m fx2.fx2tool reenumerate
+#for loading the firmware into ram
+load-piuio: all
+	cd $(PIUIO_DIR); make load
+
+#for commiting the firmware onto the eeprom
+flash-piuio: all
+	cd $(PIUIO_DIR); make flash

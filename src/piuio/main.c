@@ -12,6 +12,7 @@
 #include "io.h"
 #include "piuio.h"
 
+// allow the firmware to poll the stage pcb asynchronously
 static bool autopoll = true;
 
 // state of the IO.
@@ -253,7 +254,7 @@ int main(void)
     EA = 0;
 
     // sets up all of our pins and timer.
-    init_io();
+    init_io(autopoll);
 
     // Enable interrupts
     EA = 1;
@@ -276,6 +277,6 @@ int main(void)
             handle_piuio_msg();
         }
 
-        io_task(autopoll);
+        io_task();
     }
 }

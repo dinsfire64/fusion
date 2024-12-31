@@ -29,7 +29,7 @@ typedef union
     {
         bool btn_UL_U : 1;
         bool btn_UR_D : 1;
-        bool btn_C_L : 1;
+        bool btn_CN_L : 1;
         bool btn_LL_R : 1;
         bool btn_LR_START : 1;
         bool btn_SELECT : 1;
@@ -113,7 +113,7 @@ typedef union
         uint8_t mux_setting : 2;
         bool lamp_ul : 1;
         bool lamp_ur : 1;
-        bool lamp_c : 1;
+        bool lamp_cn : 1;
         bool lamp_ll : 1;
         bool lamp_lr : 1;
 

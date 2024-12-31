@@ -28,5 +28,6 @@ void io_task(void);
 void set_reactive_lights(void);
 
 extern piuio_input_state_t volatile current_button_state;
+extern piuio_input_state_t volatile all_states[PIUIO_NUM_SENSORS];
 
 #endif

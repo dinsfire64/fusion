@@ -107,7 +107,7 @@ usb_configuration_set_c usb_configs[] = {
 
 usb_ascii_string_c usb_strings[] = {
     [0] = "icedragon.io",
-    [1] = "open-piuio",
+    [1] = "fusion-piuio",
     // TODO: generate serial number
     [2] = "000000000000",
 };

@@ -1,10 +1,15 @@
 FILENAME = piuio.bin
 
-VID = 0547
-PID = 1002
+VID_PIUIO = 0547
+PID_PIUIO = 1002
 
+VID_LXIO       = 0D2F
+PID_LXIO       = 1020
+
+#use all possible vid/pid combos to get us into an eeprom writing state.
 force-to-bootloader:
-	python -m fx2.fx2tool -d $(VID):$(PID) -B reenumerate; \
+	python -m fx2.fx2tool -d $(VID_PIUIO):$(PID_PIUIO) -B reenumerate; \
+	python -m fx2.fx2tool -d $(VID_LXIO):$(PID_LXIO) -B reenumerate; \
 	python -m fx2.fx2tool -B reenumerate; \
 	sleep 2;
 
@@ -18,4 +23,4 @@ load: force-to-bootloader
 
 #for overriding/flashing the eeprom on a blank device
 flash: force-to-bootloader
-	python -m fx2.fx2tool program -V $(VID) -D $(PID) -N -f $(FILENAME); python -m fx2.fx2tool reenumerate
+	python -m fx2.fx2tool program -V $(VID_PIUIO) -D $(PID_PIUIO) -N -f $(FILENAME); python -m fx2.fx2tool reenumerate

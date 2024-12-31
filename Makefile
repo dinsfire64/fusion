@@ -1,7 +1,8 @@
 PIUIO_DIR = src/piuio
+LXIO_DIR = src/lxio
 
 #this order is the dependency order.
-SUBDIRS = lib/libfx2/firmware/library src/piuio-lib $(PIUIO_DIR)
+SUBDIRS = lib/libfx2/firmware/library src/piuio-lib $(PIUIO_DIR) $(LXIO_DIR)
 
 all:
 	@set -e; for dir in $(SUBDIRS); do $(MAKE) -C $${dir} all; done
@@ -16,7 +17,13 @@ install-flasher:
 #for loading the firmware into ram
 load-piuio: all
 	cd $(PIUIO_DIR); make load
+	
+load-lxio: all
+	cd $(LXIO_DIR); make load
 
 #for commiting the firmware onto the eeprom
 flash-piuio: all
 	cd $(PIUIO_DIR); make flash
+	
+flash-lxio: all
+	cd $(LXIO_DIR); make flash

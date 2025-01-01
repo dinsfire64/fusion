@@ -1,8 +1,9 @@
 PIUIO_DIR = src/piuio
 LXIO_DIR = src/lxio
+GAMEPAD_DIR = src/gamepad
 
 #this order is the dependency order.
-SUBDIRS = lib/libfx2/firmware/library src/piuio-lib $(PIUIO_DIR) $(LXIO_DIR)
+SUBDIRS = lib/libfx2/firmware/library src/piuio-lib $(PIUIO_DIR) $(LXIO_DIR) $(GAMEPAD_DIR)
 
 all:
 	@set -e; for dir in $(SUBDIRS); do $(MAKE) -C $${dir} all; done
@@ -20,6 +21,9 @@ load-piuio: all
 	
 load-lxio: all
 	cd $(LXIO_DIR); make load
+	
+load-gamepad: all
+	cd $(GAMEPAD_DIR); make load
 
 #for commiting the firmware onto the eeprom
 flash-piuio: all
@@ -27,3 +31,6 @@ flash-piuio: all
 	
 flash-lxio: all
 	cd $(LXIO_DIR); make flash
+	
+flash-gamepad: all
+	cd $(GAMEPAD_DIR); make gamepad

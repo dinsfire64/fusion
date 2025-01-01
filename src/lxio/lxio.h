@@ -150,11 +150,12 @@ typedef union
         bool lamp_maq_lr : 1;
         bool lamp_maq_ll : 1;
         bool lamp_maq_ur : 1;
-        bool lamp_coin0_pulse : 1;
-        bool lamp_coin1_usb_enable : 1;
-        bool pad5 : 1;
-        bool pad6 : 1;
-        bool pad7 : 1;
+        // NOTE: reversed from piuio for some reason?
+        bool lamp_coin_pulse : 1;
+        bool lamp_usb_en : 1;
+        bool lamp_alwayson0 : 1;
+        bool lamp_alwayson1 : 1;
+        bool lamp_alwaysoff0 : 1;
     };
     uint8_t raw;
 } lxio_cabinet_light_byte_t;

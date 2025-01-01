@@ -4,7 +4,7 @@
 lxio_output_state_t volatile lxio_togame;
 lxio_input_state_t volatile lxio_fromgame;
 
-piuio_output_state_t volatile light_state_from_lxio;
+piuio_output_state_t volatile outgoing_piuio_lights;
 
 void lxio_init(void)
 {
@@ -14,7 +14,7 @@ void lxio_init(void)
     // output is active low.
     memset(&lxio_togame.raw_buff[0], 0xFF, LXIO_PAYLOAD_SIZE);
 
-    light_state_from_lxio.raw = 0;
+    outgoing_piuio_lights.raw = 0;
 }
 
 void lxio_genreport(void)
@@ -40,6 +40,11 @@ void lxio_genreport(void)
 void lxio_parsereport(void)
 {
     // again andamiro reused all of these bytes, goodie for us!
-    memcpy(&light_state_from_lxio.buff[0], &lxio_fromgame.raw_buff[0], 4);
-    mux_lamp_state(&light_state_from_lxio);
+    memcpy(&outgoing_piuio_lights.buff[0], &lxio_fromgame.raw_buff[0], 4);
+
+    // TODO: Figure out why these are reversed compared to the piuio...
+    outgoing_piuio_lights.cabinet_lamps.lamp_coin_pulse = lxio_fromgame.cabinet_lamps.lamp_coin_pulse;
+    outgoing_piuio_lights.cabinet_lamps.lamp_usb_en = lxio_fromgame.cabinet_lamps.lamp_usb_en;
+    
+    mux_lamp_state(&outgoing_piuio_lights);
 }

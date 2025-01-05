@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import fx2.fx2tool
 import sys
 import time
@@ -8,7 +10,14 @@ import argparse
 
 from fx2 import FX2Device, FX2DeviceError
 
-STOCK_FILE_LOC = "stock_piuio.ihex"
+ENVIRON_VAR_BACKUP = "BACKUP_LOCATION"
+STOCK_BACKUP_FILENAME = "stock_piuio.ihex"
+
+if ENVIRON_VAR_BACKUP in os.environ:
+    STOCK_FILE_LOC = os.environ[ENVIRON_VAR_BACKUP]
+else:
+    print("No exported backup location, using {}".format(STOCK_BACKUP_FILENAME))
+    STOCK_FILE_LOC = STOCK_BACKUP_FILENAME
 
 
 @dataclass
@@ -124,7 +133,7 @@ def main(file_to_flash):
     ensure_bootloader()
     flash_file(stock_piuio_dev.vid, stock_piuio_dev.pid, file_to_flash)
 
-    print("Flashing complete! Please power cycle the device.")
+    print("Flashing complete! Please turn off the device.")
 
 
 if __name__ == "__main__":

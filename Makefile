@@ -33,4 +33,4 @@ flash-lxio: all
 	cd $(LXIO_DIR); make flash
 	
 flash-gamepad: all
-	cd $(GAMEPAD_DIR); make gamepad
+	cd $(GAMEPAD_DIR); make flash

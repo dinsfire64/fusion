@@ -2,6 +2,8 @@ PIUIO_DIR = src/piuio
 LXIO_DIR = src/lxio
 GAMEPAD_DIR = src/gamepad
 
+DATE := $(shell date '+%Y%m%d-%H%M%S')
+
 #this order is the dependency order.
 SUBDIRS = lib/libfx2/firmware/library src/piuio-lib $(PIUIO_DIR) $(LXIO_DIR) $(GAMEPAD_DIR)
 
@@ -34,3 +36,12 @@ flash-lxio: all
 	
 flash-gamepad: all
 	cd $(GAMEPAD_DIR); make flash
+
+#get all of the firmware in one place.
+release: all
+	mkdir -p build; \
+	cp $(PIUIO_DIR)/*.ihex build; \
+	cp $(LXIO_DIR)/*.ihex build; \
+	cp $(GAMEPAD_DIR)/*.ihex build; \
+	cp tools/flasher/flash.py build/flash; \
+	zip -r fusion-rel-$(DATE).zip build/*

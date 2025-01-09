@@ -121,6 +121,10 @@ void handle_usb_setup(__xdata struct usb_req_setup *req)
         memcpy(&EP0BUF[0], &HID_LXIO_Report[0], sizeof(HID_LXIO_Report));
         SETUP_EP0_BUF((uint8_t)sizeof(HID_LXIO_Report));
     }
+    else if ((req->wValue >> 8) == HID_TYPE_HID)
+    {
+        SETUP_EP0_IN_DATA(&lxio_hid_interface, sizeof(lxio_hid_interface));
+    }
     else
     {
         STALL_EP0();
@@ -197,6 +201,7 @@ int main(void)
     push_lights(&temp_lamp);
 
     uint16_t data_in_length = 0;
+    bool have_lights = false;
 
     lxio_init();
 
@@ -213,13 +218,17 @@ int main(void)
             {
                 memcpy(&lxio_fromgame.raw_buff[0], EP2FIFOBUF, data_in_length);
                 lxio_parsereport();
+
+                // real lxio doesn't output input without the lights
+                // so match that.
+                have_lights = true;
             }
 
             EP2BCL = 0;
         }
 
         // data flowing out of device.
-        if (pending_ep1_in)
+        if (pending_ep1_in && (have_lights || DEBUG_GENERIC_HID))
         {
             lxio_genreport();
 

@@ -146,6 +146,10 @@ void handle_usb_setup(__xdata struct usb_req_setup *req)
         // can't copy to EP0BUF directly as this report is too large.
         SETUP_EP0_IN_DATA(&HID_Gamepad_Report[0], sizeof(HID_Gamepad_Report));
     }
+    else if ((req->wValue >> 8) == HID_TYPE_HID)
+    {
+        SETUP_EP0_IN_DATA(&gamepad_hid_interface, sizeof(gamepad_hid_interface));
+    }
     else
     {
         STALL_EP0();

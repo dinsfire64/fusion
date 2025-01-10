@@ -222,8 +222,6 @@ int main(void)
     mux_lamp_state(&temp_lamp);
     push_lights(&temp_lamp);
 
-    uint8_t data_in_length = 0;
-
     gamepad_init();
 
     while (1)
@@ -233,14 +231,12 @@ int main(void)
         // data coming into device
         if (!(EP1OUTCS & _EMPTY))
         {
-            data_in_length = EP1OUTBC;
-
-            if (data_in_length == HID_LIGHTS_REPORT_SIZE)
+            if (EP1OUTBC == HID_LIGHTS_REPORT_SIZE)
             {
                 // why did this memcpy not work!?
-                // memcpy(&gamepad_fromcpu[0], &EP1OUTBUF[0], data_in_length);
+                // memcpy(&gamepad_fromcpu[0], &EP1OUTBUF[0], EP1OUTBC);
 
-                for (int i = 0; i < data_in_length; i++)
+                for (int i = 0; i < EP1OUTBC; i++)
                 {
                     gamepad_fromcpu[i] = EP1OUTBUF[i];
                 }

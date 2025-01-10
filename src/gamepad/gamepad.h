@@ -81,11 +81,11 @@ static const uint8_t HID_Gamepad_Report[] =
 
 };
 
-extern volatile uint8_t gamepad_tocpu[HID_GAMEPAD_REPORT_SIZE];
-extern volatile uint8_t gamepad_fromcpu[HID_LIGHTS_REPORT_SIZE];
+extern __xdata uint8_t gamepad_tocpu[HID_GAMEPAD_REPORT_SIZE];
+extern __xdata uint8_t gamepad_fromcpu[HID_LIGHTS_REPORT_SIZE];
 
 void gamepad_init(void);
-void gamepad_genreport(void);
+bool gamepad_genreport(void);
 void gamepad_parsereport(void);
 
 #endif

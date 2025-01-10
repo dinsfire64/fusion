@@ -1,8 +1,10 @@
 #include "gamepad.h"
 #include "io.h"
 
-volatile uint8_t gamepad_tocpu[HID_GAMEPAD_REPORT_SIZE];
-volatile uint8_t gamepad_fromcpu[HID_LIGHTS_REPORT_SIZE];
+__xdata uint8_t gamepad_tocpu[HID_GAMEPAD_REPORT_SIZE];
+__xdata uint8_t gamepad_fromcpu[HID_LIGHTS_REPORT_SIZE];
+
+__xdata uint8_t prev_gamepad_tocpu[HID_GAMEPAD_REPORT_SIZE];
 
 piuio_output_state_t volatile outgoing_piuio_lights;
 
@@ -17,8 +19,10 @@ void gamepad_init(void)
     outgoing_piuio_lights.raw = 0;
 }
 
-void gamepad_genreport(void)
+bool gamepad_genreport(void)
 {
+    bool changed = false;
+
     memset(&gamepad_tocpu[0], 0, HID_GAMEPAD_REPORT_SIZE);
 
     gamepad_tocpu[0] = GAMEPAD_REPORTID;
@@ -34,6 +38,25 @@ void gamepad_genreport(void)
     // for testing speed with evhz
     // static uint8_t counter = 0;
     // gamepad_tocpu[1] = counter++;
+
+    // save time with own compare
+    // (report id and axis are static.)
+    for (int i = 1; i < 5; i++)
+    {
+        if (prev_gamepad_tocpu[i] != gamepad_tocpu[i])
+        {
+            changed = true;
+            break;
+        }
+    }
+
+    // only memcpy the actual report if changed.
+    if (changed)
+    {
+        memcpy(&prev_gamepad_tocpu[1], &gamepad_tocpu[1], 4);
+    }
+
+    return changed;
 }
 
 void gamepad_parsereport(void)

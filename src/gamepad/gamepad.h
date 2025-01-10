@@ -28,7 +28,9 @@
 // where in the string buffer the ordinal strings start.
 // this is index of 1 as USB "id 0" means "no string"
 #define STRING_LIGHTING_START 4
-#define STRING_LIGHTING_END (STRING_LIGHTING_START + TOTAL_LIGHTS)
+#define STRING_LIGHTING_END (STRING_LIGHTING_START + TOTAL_LIGHTS)\
+
+#define TEST_POLLING_RATE false
 
 // HID report for lights and gamepad.
 static const uint8_t HID_Gamepad_Report[] =
@@ -80,9 +82,6 @@ static const uint8_t HID_Gamepad_Report[] =
         0xC0,       // End Collection
 
 };
-
-extern __xdata uint8_t gamepad_tocpu[HID_GAMEPAD_REPORT_SIZE];
-extern __xdata uint8_t gamepad_fromcpu[HID_LIGHTS_REPORT_SIZE];
 
 void gamepad_init(void);
 bool gamepad_genreport(void);

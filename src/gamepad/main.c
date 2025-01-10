@@ -233,14 +233,7 @@ int main(void)
         {
             if (EP1OUTBC == HID_LIGHTS_REPORT_SIZE)
             {
-                // why did this memcpy not work!?
-                // memcpy(&gamepad_fromcpu[0], &EP1OUTBUF[0], EP1OUTBC);
-
-                for (int i = 0; i < EP1OUTBC; i++)
-                {
-                    gamepad_fromcpu[i] = EP1OUTBUF[i];
-                }
-
+                // this pulls direct from the endpoint memory.
                 gamepad_parsereport();
             }
 
@@ -250,9 +243,9 @@ int main(void)
         // data flowing out of device.
         if (pending_ep1_in)
         {
+            // returns true on a change in state.
             if (gamepad_genreport())
             {
-                memcpy(&EP1INBUF[0], &gamepad_tocpu[0], HID_GAMEPAD_REPORT_SIZE);
                 EP1INBC = HID_GAMEPAD_REPORT_SIZE;
 
                 pending_ep1_in = false;

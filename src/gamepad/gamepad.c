@@ -1,21 +1,23 @@
 #include "gamepad.h"
 #include "io.h"
 
-__xdata uint8_t gamepad_tocpu[HID_GAMEPAD_REPORT_SIZE];
-__xdata uint8_t gamepad_fromcpu[HID_LIGHTS_REPORT_SIZE];
+#include <fx2regs.h>
 
-__xdata uint8_t prev_gamepad_tocpu[HID_GAMEPAD_REPORT_SIZE];
+// for changing endpoints in the future.
+#define EPIN_BUFFER EP1INBUF
+#define EPOUT_BUFFER EP1OUTBUF
 
-piuio_output_state_t volatile outgoing_piuio_lights;
+// keeps track of the last state sent to the CPU.
+uint8_t prev_gamepad_tocpu[HID_GAMEPAD_REPORT_SIZE];
+
+piuio_output_state_t outgoing_piuio_lights;
 
 void gamepad_init(void)
 {
-    // lights are active high
-    memset(&gamepad_fromcpu[0], 0, HID_LIGHTS_REPORT_SIZE);
+    // active high.
+    memset(&prev_gamepad_tocpu[0], 0, HID_GAMEPAD_REPORT_SIZE);
 
-    // output is active high.
-    memset(&gamepad_tocpu[0], 0, HID_GAMEPAD_REPORT_SIZE);
-
+    // all lights off on start.
     outgoing_piuio_lights.raw = 0;
 }
 
@@ -23,27 +25,29 @@ bool gamepad_genreport(void)
 {
     bool changed = false;
 
-    memset(&gamepad_tocpu[0], 0, HID_GAMEPAD_REPORT_SIZE);
+    memset(&EPIN_BUFFER[0], 0, HID_GAMEPAD_REPORT_SIZE);
 
-    gamepad_tocpu[0] = GAMEPAD_REPORTID;
+    EPIN_BUFFER[0] = GAMEPAD_REPORTID;
 
     // piuio is active low, hid is active high, so flip.
-    gamepad_tocpu[1] = ~current_button_state.player1.raw;
-    gamepad_tocpu[2] = ~current_button_state.cabinet1.raw;
-    gamepad_tocpu[3] = ~current_button_state.player2.raw;
-    gamepad_tocpu[4] = ~current_button_state.cabinet2.raw;
+    EPIN_BUFFER[1] = ~current_button_state.player1.raw;
+    EPIN_BUFFER[2] = ~current_button_state.cabinet1.raw;
+    EPIN_BUFFER[3] = ~current_button_state.player2.raw;
+    EPIN_BUFFER[4] = ~current_button_state.cabinet2.raw;
 
     // fake axis centers at zero, so no need to change.
 
+#if TEST_POLLING_RATE
     // for testing speed with evhz
-    // static uint8_t counter = 0;
-    // gamepad_tocpu[1] = counter++;
+    static uint8_t counter = 0;
+    EPIN_BUFFER[1] = counter++;
+#endif
 
-    // save time with own compare
+    // save time with own compare by checking only 1-4
     // (report id and axis are static.)
     for (int i = 1; i < 5; i++)
     {
-        if (prev_gamepad_tocpu[i] != gamepad_tocpu[i])
+        if (prev_gamepad_tocpu[i] != EPIN_BUFFER[i])
         {
             changed = true;
             break;
@@ -53,7 +57,7 @@ bool gamepad_genreport(void)
     // only memcpy the actual report if changed.
     if (changed)
     {
-        memcpy(&prev_gamepad_tocpu[1], &gamepad_tocpu[1], 4);
+        memcpy(&prev_gamepad_tocpu[1], &EPIN_BUFFER[1], 4);
     }
 
     return changed;
@@ -61,31 +65,31 @@ bool gamepad_genreport(void)
 
 void gamepad_parsereport(void)
 {
-    if (gamepad_fromcpu[0] == LIGHTING_REPORTID)
+    if (EPOUT_BUFFER[0] == LIGHTING_REPORTID)
     {
-        outgoing_piuio_lights.p1_lamps.lamp_ul = gamepad_fromcpu[1] > 0;
-        outgoing_piuio_lights.p1_lamps.lamp_ur = gamepad_fromcpu[2] > 0;
-        outgoing_piuio_lights.p1_lamps.lamp_cn = gamepad_fromcpu[3] > 0;
-        outgoing_piuio_lights.p1_lamps.lamp_ll = gamepad_fromcpu[4] > 0;
-        outgoing_piuio_lights.p1_lamps.lamp_lr = gamepad_fromcpu[5] > 0;
+        outgoing_piuio_lights.p1_lamps.lamp_ul = EPOUT_BUFFER[1] > 0;
+        outgoing_piuio_lights.p1_lamps.lamp_ur = EPOUT_BUFFER[2] > 0;
+        outgoing_piuio_lights.p1_lamps.lamp_cn = EPOUT_BUFFER[3] > 0;
+        outgoing_piuio_lights.p1_lamps.lamp_ll = EPOUT_BUFFER[4] > 0;
+        outgoing_piuio_lights.p1_lamps.lamp_lr = EPOUT_BUFFER[5] > 0;
 
-        outgoing_piuio_lights.p2_lamps.lamp_ul = gamepad_fromcpu[6] > 0;
-        outgoing_piuio_lights.p2_lamps.lamp_ur = gamepad_fromcpu[7] > 0;
-        outgoing_piuio_lights.p2_lamps.lamp_cn = gamepad_fromcpu[8] > 0;
-        outgoing_piuio_lights.p2_lamps.lamp_ll = gamepad_fromcpu[9] > 0;
-        outgoing_piuio_lights.p2_lamps.lamp_lr = gamepad_fromcpu[10] > 0;
+        outgoing_piuio_lights.p2_lamps.lamp_ul = EPOUT_BUFFER[6] > 0;
+        outgoing_piuio_lights.p2_lamps.lamp_ur = EPOUT_BUFFER[7] > 0;
+        outgoing_piuio_lights.p2_lamps.lamp_cn = EPOUT_BUFFER[8] > 0;
+        outgoing_piuio_lights.p2_lamps.lamp_ll = EPOUT_BUFFER[9] > 0;
+        outgoing_piuio_lights.p2_lamps.lamp_lr = EPOUT_BUFFER[10] > 0;
 
-        outgoing_piuio_lights.lamp_neons.lamp_neon = gamepad_fromcpu[11] > 0;
+        outgoing_piuio_lights.lamp_neons.lamp_neon = EPOUT_BUFFER[11] > 0;
 
-        outgoing_piuio_lights.p2_lamps.lamp_mar_ul_on_p2 = gamepad_fromcpu[12] > 0;
-        outgoing_piuio_lights.cabinet_lamps.lamp_maq_ur = gamepad_fromcpu[13] > 0;
-        outgoing_piuio_lights.cabinet_lamps.lamp_maq_ll = gamepad_fromcpu[14] > 0;
-        outgoing_piuio_lights.cabinet_lamps.lamp_maq_lr = gamepad_fromcpu[15] > 0;
+        outgoing_piuio_lights.p2_lamps.lamp_mar_ul_on_p2 = EPOUT_BUFFER[12] > 0;
+        outgoing_piuio_lights.cabinet_lamps.lamp_maq_ur = EPOUT_BUFFER[13] > 0;
+        outgoing_piuio_lights.cabinet_lamps.lamp_maq_ll = EPOUT_BUFFER[14] > 0;
+        outgoing_piuio_lights.cabinet_lamps.lamp_maq_lr = EPOUT_BUFFER[15] > 0;
 
-        outgoing_piuio_lights.cabinet_lamps.lamp_coin_pulse = gamepad_fromcpu[16] > 0;
-        outgoing_piuio_lights.cabinet_lamps.lamp_usb_en = gamepad_fromcpu[17] > 0;
+        outgoing_piuio_lights.cabinet_lamps.lamp_coin_pulse = EPOUT_BUFFER[16] > 0;
+        outgoing_piuio_lights.cabinet_lamps.lamp_usb_en = EPOUT_BUFFER[17] > 0;
 
-        outgoing_piuio_lights.lamp_neons.lamp_led = gamepad_fromcpu[18] > 0;
+        outgoing_piuio_lights.lamp_neons.lamp_led = EPOUT_BUFFER[18] > 0;
 
         mux_lamp_state(&outgoing_piuio_lights);
     }

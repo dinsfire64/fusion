@@ -15,7 +15,7 @@ include $(LIBFX2)/fx2rules.mk
 
 #include our io routines.
 LIB_NAME = piuio-lib
-SDCCFLAGS += -I../$(LIB_NAME)/ ../$(LIB_NAME)/build/io.rel
+SDCCFLAGS += -I../$(LIB_NAME)/ ../$(LIB_NAME)/build/io.rel 
 
 FX2FLASH   = python3 -m fx2.fx2tool program -V $(VID) -P $(PID) -f 
 	

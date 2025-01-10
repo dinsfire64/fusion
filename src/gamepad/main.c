@@ -250,12 +250,13 @@ int main(void)
         // data flowing out of device.
         if (pending_ep1_in)
         {
-            gamepad_genreport();
+            if (gamepad_genreport())
+            {
+                memcpy(&EP1INBUF[0], &gamepad_tocpu[0], HID_GAMEPAD_REPORT_SIZE);
+                EP1INBC = HID_GAMEPAD_REPORT_SIZE;
 
-            memcpy(&EP1INBUF[0], &gamepad_tocpu[0], HID_GAMEPAD_REPORT_SIZE);
-            EP1INBC = HID_GAMEPAD_REPORT_SIZE;
-
-            pending_ep1_in = false;
+                pending_ep1_in = false;
+            }
         }
     }
 }

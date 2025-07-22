@@ -191,15 +191,6 @@ int main(void)
     // true will reenumerate on boot.
     usb_init(true);
 
-    // turn on the LED to indicate firmware has loaded.
-    // if you have something running that will autoconnect to the piuio (like the linux kernel module)
-    // this will not stay lit for long, since a full lighting state will be written.
-    piuio_output_state_t temp_lamp;
-    temp_lamp.raw = 0;
-    temp_lamp.lamp_neons.lamp_led = true;
-    mux_lamp_state(&temp_lamp);
-    push_lights(&temp_lamp);
-
     uint16_t data_in_length = 0;
     bool have_lights = false;
 

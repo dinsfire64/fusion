@@ -16,6 +16,7 @@ uint8_t current_sensor_num = 0;
 
 static volatile bool preform_poll = false;
 bool autopoll_enabled = false;
+bool got_lights_from_game = false;
 
 void set_sensor_mux(void)
 {
@@ -46,7 +47,11 @@ void create_exchange(void)
     set_sensor_mux();
 
     // pretty lights :)
-    set_reactive_lights();
+    // but only if the game isn't telling us lights right now.
+    if (!got_lights_from_game)
+    {
+        set_reactive_lights();
+    }
 
     // output the new mux state
     push_lights(&current_lamp_state);
@@ -149,7 +154,7 @@ void init_io(bool en_autopoll)
         ET1 = 1; // enables Timer 1 interrupt
         TR1 = 1; // starts Timer 1
     }
-    
+
     autopoll_enabled = en_autopoll;
 
     // init states
@@ -165,6 +170,15 @@ void init_io(bool en_autopoll)
 
     current_sensor_num = 0;
     set_sensor_mux();
+
+    // turn on the LED to indicate firmware has loaded.
+    piuio_output_state_t temp_lamp;
+    temp_lamp.raw = 0;
+    temp_lamp.lamp_neons.lamp_led = true;
+
+    // mux and push in case autopoll isn't running.
+    mux_lamp_state(&temp_lamp, false);
+    push_lights(&temp_lamp);
 }
 
 void push_lights(piuio_output_state_t *light_state)
@@ -212,8 +226,11 @@ void push_lights(piuio_output_state_t *light_state)
     EA = 1;
 }
 
-void mux_lamp_state(piuio_output_state_t *light_state_from_game)
+void mux_lamp_state(piuio_output_state_t *light_state_from_game, bool is_from_game)
 {
+    // in order to disable reactive lights while we are being talked to.
+    got_lights_from_game = is_from_game;
+
     // take note of this for later to mux it with the reactive lighting.
     current_game_lamp_state.raw = light_state_from_game->raw;
 

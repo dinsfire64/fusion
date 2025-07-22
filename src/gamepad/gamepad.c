@@ -91,6 +91,6 @@ void gamepad_parsereport(void)
 
         outgoing_piuio_lights.lamp_neons.lamp_led = EPOUT_BUFFER[18] > 0;
 
-        mux_lamp_state(&outgoing_piuio_lights);
+        mux_lamp_state(&outgoing_piuio_lights, true);
     }
 }

@@ -215,13 +215,6 @@ int main(void)
     // true will reenumerate on boot.
     usb_init(true);
 
-    // turn on the LED to indicate firmware has loaded.
-    piuio_output_state_t temp_lamp;
-    temp_lamp.raw = 0;
-    temp_lamp.lamp_neons.lamp_led = true;
-    mux_lamp_state(&temp_lamp);
-    push_lights(&temp_lamp);
-
     gamepad_init();
 
     while (1)
@@ -231,6 +224,7 @@ int main(void)
         // data coming into device
         if (!(EP1OUTCS & _EMPTY))
         {
+            // only parse if it's the expected size.
             if (EP1OUTBC == HID_LIGHTS_REPORT_SIZE)
             {
                 // this pulls direct from the endpoint memory.

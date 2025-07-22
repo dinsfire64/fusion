@@ -22,7 +22,7 @@ void push_lights(piuio_output_state_t *light_state);
 piuio_input_state_t get_input_state(void);
 
 void create_exchange(void);
-void mux_lamp_state(piuio_output_state_t *light_state_from_game);
+void mux_lamp_state(piuio_output_state_t *light_state_from_game, bool is_from_game);
 
 void io_task(void);
 void set_reactive_lights(void);

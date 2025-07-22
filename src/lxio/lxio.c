@@ -45,6 +45,6 @@ void lxio_parsereport(void)
     // TODO: Figure out why these are reversed compared to the piuio...
     outgoing_piuio_lights.cabinet_lamps.lamp_coin_pulse = lxio_fromgame.cabinet_lamps.lamp_coin_pulse;
     outgoing_piuio_lights.cabinet_lamps.lamp_usb_en = lxio_fromgame.cabinet_lamps.lamp_usb_en;
-    
-    mux_lamp_state(&outgoing_piuio_lights);
+
+    mux_lamp_state(&outgoing_piuio_lights, true);
 }

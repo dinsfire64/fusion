@@ -183,7 +183,7 @@ typedef union
         uint8_t mux_setting : 2;
         bool lamp_ul : 1;
         bool lamp_ur : 1;
-        bool lamp_c : 1;
+        bool lamp_cn : 1;
         bool lamp_ll : 1;
         bool lamp_lr : 1;
 

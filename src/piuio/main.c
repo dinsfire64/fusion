@@ -145,7 +145,7 @@ bool handle_piuio_msg(void)
 
             if (autopoll)
             {
-                mux_lamp_state(&lamp_state_from_game);
+                mux_lamp_state(&lamp_state_from_game, true);
             }
             else
             {
@@ -261,14 +261,6 @@ int main(void)
 
     // true will reenumerate on boot.
     usb_init(true);
-
-    // turn on the LED to indicate firmware has loaded.
-    // if you have something running that will autoconnect to the piuio (like the linux kernel module)
-    // this will not stay lit for long, since a full lighting state will be written.
-    lamp_state_from_game.raw = 0;
-    lamp_state_from_game.lamp_neons.lamp_led = true;
-    mux_lamp_state(&lamp_state_from_game);
-    push_lights(&lamp_state_from_game);
 
     while (1)
     {

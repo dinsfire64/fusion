@@ -50,7 +50,7 @@ usb_hid_descriptor_c gamepad_hid_interface = {
     .bDescriptorType = HID_TYPE_HID,
     .bcdHID = 0x0111,
     .bCountryCode = 0,
-    .bNumDescriptors = 2,
+    .bNumDescriptors = 1,
     .bHIDReportType = HID_TYPE_HID_REPORT,
     .wDescriptorLength = sizeof(HID_Gamepad_Report),
 };
@@ -104,16 +104,16 @@ usb_ascii_string_c usb_strings[] = {
 
     // NOTE: This order is hard coded, if changing
     // then be sure to change the parser in gamepad.c
-    "p1 ul / p2 u",
-    "p1 ur / p2 d",
-    "p1 cn / p2 l",
-    "p1 ll / p2 r",
+    "p1 ul-u",
+    "p1 ur-d",
+    "p1 cn-l",
+    "p1 ll-r",
     "p1 lr",
 
-    "p2 ul / p1 u",
-    "p2 ur / p1 d",
-    "p2 cn / p1 l",
-    "p2 ll / p1 r",
+    "p2 ul-u",
+    "p2 ur-d",
+    "p2 cn-l",
+    "p2 ll-r",
     "p2 lr",
 
     "neon",

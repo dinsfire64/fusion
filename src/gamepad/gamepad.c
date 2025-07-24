@@ -19,6 +19,12 @@ void gamepad_init(void)
 
     // all lights off on start.
     outgoing_piuio_lights.raw = 0;
+
+    outgoing_piuio_lights.lamp_neons.lamp_led = true;
+
+    // force the usb enable to be on all the time in this mode.
+    outgoing_piuio_lights.cabinet_lamps.lamp_usb_en = true;
+    mux_lamp_state(&outgoing_piuio_lights, false);
 }
 
 bool gamepad_genreport(void)
@@ -87,9 +93,8 @@ void gamepad_parsereport(void)
         outgoing_piuio_lights.cabinet_lamps.lamp_maq_lr = EPOUT_BUFFER[15] > 0;
 
         outgoing_piuio_lights.cabinet_lamps.lamp_coin_pulse = EPOUT_BUFFER[16] > 0;
-        outgoing_piuio_lights.cabinet_lamps.lamp_usb_en = EPOUT_BUFFER[17] > 0;
 
-        outgoing_piuio_lights.lamp_neons.lamp_led = EPOUT_BUFFER[18] > 0;
+        outgoing_piuio_lights.lamp_neons.lamp_led = EPOUT_BUFFER[17] > 0;
 
         mux_lamp_state(&outgoing_piuio_lights, true);
     }

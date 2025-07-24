@@ -10,8 +10,8 @@
 
 #define NUM_OF_BUTTONS 32
 
-// five player, five player, neon, four marquee, coin, usb, led
-#define TOTAL_LIGHTS (5 + 5 + 1 + 4 + 1 + 1 + 1)
+// five player, five player, neon, four marquee, coin, led
+#define TOTAL_LIGHTS (5 + 5 + 1 + 4 + 1 + 1)
 
 #define GAMEPAD_REPORTID 0x01
 #define LIGHTING_REPORTID 0x02
@@ -33,7 +33,7 @@
 #define TEST_POLLING_RATE false
 
 // HID report for lights and gamepad.
-static const uint8_t HID_Gamepad_Report[] =
+const static __xdata uint8_t HID_Gamepad_Report[] =
     {
         0x05, 0x01, // Usage Page (Generic Desktop Ctrls)
         0x09, 0x05, // Usage (Game Pad)

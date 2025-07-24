@@ -124,7 +124,6 @@ usb_ascii_string_c usb_strings[] = {
     "mar lr",
 
     "coin",
-    "usb en",
     "led",
 };
 

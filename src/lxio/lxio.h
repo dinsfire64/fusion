@@ -20,7 +20,7 @@
 
 // HID report
 
-static const uint8_t HID_LXIO_Report[] =
+static const __xdata uint8_t HID_LXIO_Report[] =
     {
 #if !DEBUG_GENERIC_HID
         0x06, 0x00, 0xFF, // Usage Page (Vendor Defined 0xFF00)

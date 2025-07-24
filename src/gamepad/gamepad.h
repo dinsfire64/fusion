@@ -6,7 +6,7 @@
 #include <stdbool.h>
 
 #define GAMEPAD_VID 0x0547
-#define GAMEPAD_PID 0x1002
+#define GAMEPAD_PID 0x1337
 
 #define NUM_OF_BUTTONS 32
 

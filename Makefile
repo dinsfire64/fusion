@@ -1,11 +1,12 @@
 PIUIO_DIR = src/piuio
 LXIO_DIR = src/lxio
 GAMEPAD_DIR = src/gamepad
+KEYBOARD_DIR = src/keyboard
 
 DATE := $(shell date '+%Y%m%d-%H%M%S')
 
 #this order is the dependency order.
-SUBDIRS = lib/libfx2/firmware/library src/piuio-lib $(PIUIO_DIR) $(LXIO_DIR) $(GAMEPAD_DIR)
+SUBDIRS = lib/libfx2/firmware/library src/piuio-lib $(PIUIO_DIR) $(LXIO_DIR) $(GAMEPAD_DIR) $(KEYBOARD_DIR)
 
 all:
 	@set -e; for dir in $(SUBDIRS); do $(MAKE) -C $${dir} all; done
@@ -26,6 +27,9 @@ load-lxio: all
 	
 load-gamepad: all
 	cd $(GAMEPAD_DIR); make load
+	
+load-keyboard: all
+	cd $(KEYBOARD_DIR); make load
 
 #for commiting the firmware onto the eeprom
 flash-piuio: all
@@ -36,6 +40,9 @@ flash-lxio: all
 	
 flash-gamepad: all
 	cd $(GAMEPAD_DIR); make flash
+	
+flash-keyboard: all
+	cd $(KEYBOARD_DIR); make flash
 
 #get all of the firmware in one place.
 release: all
@@ -43,5 +50,6 @@ release: all
 	cp $(PIUIO_DIR)/*.ihex build; \
 	cp $(LXIO_DIR)/*.ihex build; \
 	cp $(GAMEPAD_DIR)/*.ihex build; \
+	cp $(KEYBOARD_DIR)/*.ihex build; \
 	cp tools/flasher/flash.py build/flash; \
 	zip -r fusion-rel-$(DATE).zip build/*

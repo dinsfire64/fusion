@@ -42,6 +42,8 @@ potentional_devices = [
                 "fusion-piuio", "Fusion PIUIO"),
     UsbMatching(0x0547, 0x1337,
                 "fusion-gamepad", "Fusion HID Gamepad"),
+    UsbMatching(0x0547, 0x4b1d,
+                "fusion-keyboard", "Fusion Keyboard"),
     UsbMatching(0x0d2f, 0x1020,
                 "fusion-lxio", "Fusion LXIO"),
 ]

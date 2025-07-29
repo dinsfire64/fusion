@@ -6,7 +6,7 @@ Faster polling is just a firmware upgrade away.
 # Features:
 * Faster polling (1ms/1kHz in LXIO and gamepad modes)
 * Full compatibility with existing arcade software
-* Multiple targets: LXIO, original PIUIO, generic HID Gamepad
+* Multiple targets: LXIO, original PIUIO, generic HID Gamepad, Keyboard
 * Reactive lighting
 * No additional hardware needed
 

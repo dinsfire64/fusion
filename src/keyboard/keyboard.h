@@ -10,8 +10,10 @@
 
 #define KEYBOARD_REPORTID 0x01
 
-// report id, buttons, plus two fake axis
-#define HID_KEYBOARD_NUMKEYS 12
+// 13 keys = 5player, 5player, test/service/coin
+#define HID_KEYBOARD_NUMKEYS 13
+
+// one key per byte, plus one report byte.
 #define HID_KEYBOARD_REPORT_SIZE (1 + HID_KEYBOARD_NUMKEYS)
 
 #define HID_KEYBOARD_EPINADDR (USB_DIR_IN | 1)

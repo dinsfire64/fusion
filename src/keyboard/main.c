@@ -144,9 +144,8 @@ int main(void)
     EP1INCFG = _VALID | _TYPE0 | _TYPE1;
     EP1INCS = 0;
 
-    // EP1 is also an INTERRUPT OUT.
-    EP1OUTCFG = _VALID | _TYPE0 | _TYPE1;
-    EP1OUTCS = 0;
+    // EP1 is not used.
+    EP1OUTCFG &= ~_VALID;
 
     // EP4/8 are not used.
     EP4CFG &= ~_VALID;

@@ -144,7 +144,7 @@ int main(void)
     EP1INCFG = _VALID | _TYPE0 | _TYPE1;
     EP1INCS = 0;
 
-    // EP1 is not used.
+    // EP1OUT is not used.
     EP1OUTCFG &= ~_VALID;
 
     // EP4/8 are not used.

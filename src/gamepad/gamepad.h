@@ -28,7 +28,7 @@
 // where in the string buffer the ordinal strings start.
 // this is index of 1 as USB "id 0" means "no string"
 #define STRING_LIGHTING_START 4
-#define STRING_LIGHTING_END (STRING_LIGHTING_START + TOTAL_LIGHTS)\
+#define STRING_LIGHTING_END (STRING_LIGHTING_START + TOTAL_LIGHTS)
 
 #define TEST_POLLING_RATE false
 
@@ -50,25 +50,20 @@ const static __xdata uint8_t HID_Gamepad_Report[] =
         0x81, 0x02,             //   Input (Data,Var,Abs,No Wrap,Linear,Preferred State,No Null Position)
 
         0x05, 0x01, //   Usage Page (Generic Desktop Ctrls)
-        0x15, 0x81, //   Logical Minimum (-127)
-        0x25, 0x7F, //   Logical Maximum (127)
         0x09, 0x30, //   Usage (X)
         0x09, 0x31, //   Usage (Y)
-        0x95, 0x02, //   Report Count (2)
+        0x15, 0x81, //   Logical Minimum (-127)
+        0x25, 0x7F, //   Logical Maximum (127)
         0x75, 0x08, //   Report Size (8)
+        0x95, 0x02, //   Report Count (2)
         0x81, 0x02, //   Input (Data,Var,Abs,No Wrap,Linear,Preferred State,No Null Position)
 
-        0xC0, // End Collection
-
-        0x05, 0x01,              // Usage Page (Generic Desktop Ctrls)
-        0x09, 0x00,              // Usage (Undefined)
-        0xA1, 0x01,              // Collection (Application)
-        0x85, LIGHTING_REPORTID, //   Report ID (LIGHTING_REPORTID)
-        0x95, TOTAL_LIGHTS,      //   Report Count (TOTAL_LIGHTS)
-        0x75, 0x08,              //   Report Size (8)
-        0x15, 0x00,              //   Logical Minimum (0)
-        0x26, 0xFF, 0x00,        //   Logical Maximum (255)
-
+        0x85, LIGHTING_REPORTID,     //   Report ID (LIGHTING_REPORTID)
+        0x09, 0x00,                  //   Usage (Undefined)
+        0x15, 0x00,                  //   Logical Minimum (0)
+        0x25, 0xFF,                  //   Logical Maximum (-1)
+        0x75, 0x08,                  //   Report Size (8)
+        0x95, TOTAL_LIGHTS,          //   Report Count (TOTAL_LIGHTS)
         0x05, 0x0A,                  //   Usage Page (Ordinal)
         0x89, STRING_LIGHTING_START, //   String Minimum (STRING_LIGHTING_START)
         0x99, STRING_LIGHTING_END,   //   String Maximum (STRING_LIGHTING_END)
@@ -76,11 +71,7 @@ const static __xdata uint8_t HID_Gamepad_Report[] =
         0x29, TOTAL_LIGHTS,          //   Usage Maximum (TOTAL_LIGHTS)
         0x91, 0x02,                  //   Output (Data,Var,Abs,No Wrap,Linear,Preferred State,No Null Position,Non-volatile)
 
-        0x19, 0x01, //   Usage Minimum (0x01)
-        0x29, 0x01, //   Usage Maximum (0x01)
-        0x81, 0x03, //   Input (Const,Var,Abs,No Wrap,Linear,Preferred State,No Null Position)
-        0xC0,       // End Collection
-
+        0xC0, // End Collection
 };
 
 void gamepad_init(void);

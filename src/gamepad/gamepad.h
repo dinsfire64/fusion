@@ -33,7 +33,7 @@
 #define TEST_POLLING_RATE false
 
 // HID report for lights and gamepad.
-const static __xdata uint8_t HID_Gamepad_Report[] =
+const static __code uint8_t HID_Gamepad_Report[] =
     {
         0x05, 0x01, // Usage Page (Generic Desktop Ctrls)
         0x09, 0x05, // Usage (Game Pad)

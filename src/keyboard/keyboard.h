@@ -19,7 +19,7 @@
 #define HID_KEYBOARD_EPINADDR (USB_DIR_IN | 1)
 
 // HID report for keyboard
-const static __xdata uint8_t HID_Keyboard_Report[] =
+const static __code uint8_t HID_Keyboard_Report[] =
     {
 
         0x05, 0x01, // Usage Page (Generic Desktop)

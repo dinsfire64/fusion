@@ -108,8 +108,8 @@ void handle_usb_setup(__xdata struct usb_req_setup *req)
 {
     if ((req->wValue >> 8) == HID_TYPE_HID_REPORT)
     {
-        // can't copy to EP0BUF directly as this report is too large.
-        SETUP_EP0_IN_DATA(&HID_Keyboard_Report[0], sizeof(HID_Keyboard_Report));
+        memcpy(&EP0BUF[0], &HID_Keyboard_Report[0], sizeof(HID_Keyboard_Report));
+        SETUP_EP0_BUF((uint8_t)sizeof(HID_Keyboard_Report));
     }
     else if ((req->wValue >> 8) == HID_TYPE_HID)
     {

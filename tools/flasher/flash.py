@@ -33,10 +33,13 @@ bootloader = UsbMatching(0x04b4, 0x8613,
                          "FX2 series Cypress-class bootloader", "FX2 Bootloader")
 stock_piuio_dev = UsbMatching(0x0547, 0x1002,
                               "EZ-USB FX2", "Stock PIUIO")
+wiped_fx2_dev = UsbMatching(0x0547, 0x1002,
+                              None, "Wiped FX2")
 
 potentional_devices = [
     UsbMatching(0x04b4, 0x8613, None, "FX2 No EEPROM"),
     bootloader,
+    wiped_fx2_dev,
     stock_piuio_dev,
     UsbMatching(0x0547, 0x1002,
                 "fusion-piuio", "Fusion PIUIO"),
